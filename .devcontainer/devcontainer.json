@@ -1,0 +1,33 @@
+{
+  "name": "Ubuntu",
+  "image": "mcr.microsoft.com/devcontainers/base:noble",
+
+  "features": {
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/ruby:1": {},
+    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {},
+    "ghcr.io/audacioustux/devcontainers/aws-sam-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/devcontainers/features/node:1": {}
+  },
+
+  "containerEnv": {
+    "AWS_CLI_AUTO_PROMPT": "on-partial"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "cweijan.vscode-postgresql-client2",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder}/backend-flask/.venv/bin/python"
+      }
+    }
+  },
+
+  "postCreateCommand": "cd frontend-react-js && npm install"
+}
