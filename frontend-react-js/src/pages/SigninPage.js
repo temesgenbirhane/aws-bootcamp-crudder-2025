@@ -1,10 +1,9 @@
 import './SigninPage.css';
 import React from "react";
-import {ReactComponent as Logo} from '../components/svg/logo.svg';
+import { ReactComponent as Logo } from '../components/svg/logo.svg';
 import { Link } from "react-router-dom";
 
-// [TODO] Authenication
-import { Auth } from 'aws-amplify';
+import { signIn } from 'aws-amplify/auth';
 
 export default function SigninPage() {
 
@@ -13,34 +12,45 @@ export default function SigninPage() {
   const [errors, setErrors] = React.useState('');
 
   const onsubmit = async (event) => {
-    setErrors('')
     event.preventDefault();
-    Auth.signIn(email, password)
-    .then(user => {
-      console.log('user',user)
-      localStorage.setItem("access_token", user.signInUserSession.accessToken.jwtToken)
-      window.location.href = "/"
-    })
-    .catch(error => { 
-      if (error.code == 'UserNotConfirmedException') {
-        window.location.href = "/confirm"
+    setErrors('');
+
+    try {
+      const result = await signIn({
+        username: email,
+        password: password
+      });
+
+      console.log("signin result", result);
+
+      // If MFA or other steps are required
+      if (result.nextStep?.signInStep !== "DONE") {
+        console.log("Next step:", result.nextStep);
+        // You can handle MFA here if needed
+        return;
       }
-      setErrors(error.message)
-    });
-    return false
-  }
 
-  const email_onchange = (event) => {
-    setEmail(event.target.value);
-  }
-  const password_onchange = (event) => {
-    setPassword(event.target.value);
-  }
+      // User is fully signed in
+      const accessToken = result.tokens?.accessToken?.toString();
+      if (accessToken) {
+        localStorage.setItem("access_token", accessToken);
+      }
 
-  let el_errors;
-  if (errors){
-    el_errors = <div className='errors'>{errors}</div>;
-  }
+      window.location.href = "/";
+
+    } catch (error) {
+      console.log("Sign-in error:", error);
+
+      if (error.code === 'UserNotConfirmedException') {
+        window.location.href = "/confirm";
+        return;
+      }
+
+      setErrors(error.message || "Sign-in failed");
+    }
+
+    return false;
+  };
 
   return (
     <article className="signin-article">
@@ -59,7 +69,7 @@ export default function SigninPage() {
               <input
                 type="text"
                 value={email}
-                onChange={email_onchange} 
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className='field text_field password'>
@@ -67,25 +77,24 @@ export default function SigninPage() {
               <input
                 type="password"
                 value={password}
-                onChange={password_onchange} 
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
-          {el_errors}
+
+          {errors && <div className='errors'>{errors}</div>}
+
           <div className='submit'>
             <Link to="/forgot" className="forgot-link">Forgot Password?</Link>
             <button type='submit'>Sign In</button>
           </div>
-
         </form>
+
         <div className="dont-have-an-account">
-          <span>
-            Don't have an account?
-          </span>
+          <span>Don't have an account?</span>
           <Link to="/signup">Sign up!</Link>
         </div>
       </div>
-
     </article>
   );
 }
