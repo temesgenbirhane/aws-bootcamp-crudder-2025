@@ -1,6 +1,6 @@
 import './RecoverPage.css';
 import React from "react";
-import {ReactComponent as Logo} from '../components/svg/logo.svg';
+import { ReactComponent as Logo } from '../components/svg/logo.svg';
 import { Link } from "react-router-dom";
 
 // Amplify v6 Auth
@@ -14,31 +14,41 @@ export default function RecoverPage() {
   const [errors, setErrors] = React.useState('');
   const [formState, setFormState] = React.useState('send_code');
 
+  // STEP 1 — Send reset code
   const onsubmit_send_code = async (event) => {
     event.preventDefault();
     setErrors('');
 
-    resetPassword({ username })
-      .then(() => setFormState('confirm_code'))
-      .catch((err) => setErrors(err.message));
+    try {
+      await resetPassword({ username });
+      setFormState('confirm_code');
+    } catch (err) {
+      setErrors(err.message);
+    }
 
     return false;
   };
 
+  // STEP 2 — Confirm code + set new password
   const onsubmit_confirm_code = async (event) => {
     event.preventDefault();
     setErrors('');
 
-    if (password === passwordAgain) {
-      confirmResetPassword({
+    if (password !== passwordAgain) {
+      setErrors('Passwords do not match');
+      return false;
+    }
+
+    try {
+      await confirmResetPassword({
         username,
         confirmationCode: code,
-        newPassword: password
-      })
-        .then(() => setFormState('success'))
-        .catch((err) => setErrors(err.message));
-    } else {
-      setErrors('Passwords do not match');
+        newPassword: password,
+      });
+
+      setFormState('success');
+    } catch (err) {
+      setErrors(err.message);
     }
 
     return false;

@@ -13,25 +13,35 @@ from services.message_groups import *
 from services.messages import *
 from services.create_message import *
 from services.show_activity import *
+from lib.cognito_jwt_token import CognitoJwtToken, extract_access_token, TokenVerifyError
 
 app = Flask(__name__)
+
+cognito_jwt_token = CognitoJwtToken(
+  user_pool_id=os.getenv("AWS_COGNITO_USER_POOL_ID"), 
+  user_pool_client_id=os.getenv("AWS_COGNITO_USER_POOL_CLIENT_ID"),
+  region=os.getenv("AWS_DEFAULT_REGION")
+)
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
 # cors = CORS(
 #   app, 
 #   resources={r"/api/*": {"origins": origins}},
-#   expose_headers="location,link",
-#   allow_headers="content-type,if-modified-since",
+#   headers=['Content-Type', 'Authorization'], 
+#   expose_headers='Authorization',
 #   methods="OPTIONS,GET,HEAD,POST"
 # )
+
 cors = CORS(
     app,
     resources={r"/api/*": {"origins": "*"}},
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization", "If-Modified-Since"],
+    expose_headers=["Authorization"],
     methods=["OPTIONS", "GET", "HEAD", "POST"]
 )
+
 @app.route("/api/message_groups", methods=['GET'])
 def data_message_groups():
   user_handle  = 'andrewbrown'
