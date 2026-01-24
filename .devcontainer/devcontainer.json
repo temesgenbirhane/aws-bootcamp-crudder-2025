@@ -27,5 +27,7 @@
         "python.defaultInterpreterPath": "${workspaceFolder}/backend-flask/.venv/bin/python"
       }
     }
-  }
+  },
+
+  "postCreateCommand": "echo \"export CODESPACE_IP=$(curl -s ifconfig.me)\" >> ~/.bashrc && $THEIA_WORKSPACE_ROOT/backend-flask/bin/rds-update-sg-rule"
 }
