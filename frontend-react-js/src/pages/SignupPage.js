@@ -19,7 +19,7 @@ export default function SignupPage() {
 
     try {
       const result = await signUp({
-        username: username,   // <-- MUST be username, not email
+        username: email,   // <-- FIXED: email is the Cognito username
         password: password,
         options: {
           userAttributes: {
@@ -27,7 +27,7 @@ export default function SignupPage() {
             email: email,
             preferred_username: username
           },
-          autoSignIn: true
+          autoSignIn: false
         }
       });
 

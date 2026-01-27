@@ -1,9 +1,8 @@
 import './ConfirmationPage.css';
 import React from "react";
 import { useParams } from 'react-router-dom';
-import {ReactComponent as Logo} from '../components/svg/logo.svg';
+import { ReactComponent as Logo } from '../components/svg/logo.svg';
 
-// Amplify v6 Auth
 import { resendSignUp, confirmSignUp } from 'aws-amplify/auth';
 
 export default function ConfirmationPage() {
@@ -14,14 +13,6 @@ export default function ConfirmationPage() {
 
   const params = useParams();
 
-  const code_onchange = (event) => {
-    setCode(event.target.value);
-  };
-
-  const email_onchange = (event) => {
-    setEmail(event.target.value);
-  };
-
   const resend_code = async () => {
     setErrors('');
     try {
@@ -29,34 +20,27 @@ export default function ConfirmationPage() {
       setCodeSent(true);
     } catch (err) {
       console.log(err);
-      if (err.message === 'Username cannot be empty') {
-        setErrors("You need to provide an email to resend the activation code");
-      } else if (err.message === "Username/client id combination not found.") {
-        setErrors("Email is invalid or cannot be found.");
-      }
+      setErrors(err.message);
     }
   };
 
   const onsubmit = async (event) => {
     event.preventDefault();
     setErrors('');
+
     try {
       await confirmSignUp({
         username: email,
         confirmationCode: code
       });
+
       window.location.href = "/";
     } catch (error) {
       setErrors(error.message);
     }
+
     return false;
   };
-
-  let el_errors = errors ? <div className='errors'>{errors}</div> : null;
-
-  let code_button = codeSent
-    ? <div className="sent-message">A new activation code has been sent to your email</div>
-    : <button className="resend" onClick={resend_code}>Resend Activation Code</button>;
 
   React.useEffect(() => {
     if (params.email) {
@@ -81,7 +65,7 @@ export default function ConfirmationPage() {
               <input
                 type="text"
                 value={email}
-                onChange={email_onchange}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className='field text_field code'>
@@ -89,17 +73,23 @@ export default function ConfirmationPage() {
               <input
                 type="text"
                 value={code}
-                onChange={code_onchange}
+                onChange={(e) => setCode(e.target.value)}
               />
             </div>
           </div>
-          {el_errors}
+
+          {errors && <div className='errors'>{errors}</div>}
+
           <div className='submit'>
             <button type='submit'>Confirm Email</button>
           </div>
         </form>
       </div>
-      {code_button}
+
+      {codeSent
+        ? <div className="sent-message">A new activation code has been sent to your email</div>
+        : <button className="resend" onClick={resend_code}>Resend Activation Code</button>
+      }
     </article>
   );
 }
