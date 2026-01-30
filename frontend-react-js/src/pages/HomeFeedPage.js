@@ -1,15 +1,12 @@
 import './HomeFeedPage.css';
 import React from "react";
 
-import { getCurrentUser } from 'aws-amplify/auth';
-
-import DesktopNavigation from '../components/DesktopNavigation';
-import DesktopSidebar from '../components/DesktopSidebar';
+import DesktopNavigation  from '../components/DesktopNavigation';
+import DesktopSidebar     from '../components/DesktopSidebar';
 import ActivityFeed from '../components/ActivityFeed';
 import ActivityForm from '../components/ActivityForm';
 import ReplyForm from '../components/ReplyForm';
-
-import Cookies from 'js-cookie';
+import checkAuth from '../lib/CheckAuth';
 
 export default function HomeFeedPage() {
   const [activities, setActivities] = React.useState([]);
@@ -21,68 +18,56 @@ export default function HomeFeedPage() {
 
   const loadData = async () => {
     try {
-      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`;
+      const backend_url = `${process.env.REACT_APP_BACKEND_URL}/api/activities/home`
       const res = await fetch(backend_url, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`
         },
         method: "GET"
       });
-      
-      const resJson = await res.json();
+      let resJson = await res.json();
       if (res.status === 200) {
-        setActivities(resJson);
+        setActivities(resJson)
       } else {
-        console.log(res);
+        console.log(res)
       }
     } catch (err) {
       console.log(err);
     }
   };
 
-  const checkAuth = async () => {
-    try {
-      const currentUser = await getCurrentUser();
-      console.log("user", currentUser);
 
-      setUser({
-        display_name: currentUser.signInDetails?.loginId,
-        handle: currentUser.username
-      });
-    } catch (err) {
-      console.log("Not signed in", err);
-    }
-  };
-
-  React.useEffect(() => {
+  
+  React.useEffect(()=>{
+    //prevents double call
     if (dataFetchedRef.current) return;
     dataFetchedRef.current = true;
 
     loadData();
-    checkAuth();
-  }, []);
+    checkAuth(setUser);
+  }, [])
 
   return (
     <article>
       <DesktopNavigation user={user} active={'home'} setPopped={setPopped} />
       <div className='content'>
-        <ActivityForm
+        <ActivityForm  
           popped={popped}
-          setPopped={setPopped}
-          setActivities={setActivities}
+          setPopped={setPopped} 
+          setActivities={setActivities} 
         />
-        <ReplyForm
-          activity={replyActivity}
-          popped={poppedReply}
-          setPopped={setPoppedReply}
-          setActivities={setActivities}
-          activities={activities}
+        <ReplyForm 
+          activity={replyActivity} 
+          popped={poppedReply} 
+          setPopped={setPoppedReply} 
+          setActivities={setActivities} 
+          activities={activities} 
         />
-        <ActivityFeed
-          title="Home"
-          setReplyActivity={setReplyActivity}
-          setPopped={setPoppedReply}
-          activities={activities}
+        <ActivityFeed 
+          title="Home" 
+          setReplyActivity={setReplyActivity} 
+          setPopped={setPoppedReply} 
+          activities={activities} 
         />
       </div>
       <DesktopSidebar user={user} />
