@@ -89,6 +89,13 @@ RequestsInstrumentor().instrument()
 frontend = os.getenv('FRONTEND_URL')
 backend = os.getenv('BACKEND_URL')
 origins = [frontend, backend]
+# cors = CORS(
+#   app, 
+#   resources={r"/api/*": {"origins": origins}},
+#   headers=['Content-Type', 'Authorization'], 
+#   expose_headers='Authorization',
+#   methods="OPTIONS,GET,HEAD,POST"
+# )
 cors = CORS(
     app,
     resources={r"/api/*": {"origins": "*"}},
@@ -97,14 +104,6 @@ cors = CORS(
     expose_headers=["Authorization"],
     methods=["OPTIONS", "GET", "HEAD", "POST"]
 )
-# cors = CORS(
-#   app, 
-#   resources={r"/api/*": {"origins": origins}},
-#   headers=['Content-Type', 'Authorization'], 
-#   expose_headers='Authorization',
-#   methods="OPTIONS,GET,HEAD,POST"
-# )
-
 # CloudWatch Logs -----
 #@app.after_request
 #def after_request(response):
@@ -114,21 +113,18 @@ cors = CORS(
 
 # Rollbar ----------
 rollbar_access_token = os.getenv('ROLLBAR_ACCESS_TOKEN')
-@app.before_first_request
-def init_rollbar():
-    """init rollbar module"""
-    rollbar.init(
-        # access token
-        rollbar_access_token,
-        # environment name
-        'production',
-        # server root directory, makes tracebacks prettier
-        root=os.path.dirname(os.path.realpath(__file__)),
-        # flask already sets up logging
-        allow_logging_basic_config=False)
 
-    # send exceptions from `app` to rollbar, using flask's signal system.
-    got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+@app.before_request
+def init_rollbar():
+    if not getattr(app, "_rollbar_initialized", False):
+        rollbar.init(
+            rollbar_access_token,
+            'production',
+            root=os.path.dirname(os.path.realpath(__file__)),
+            allow_logging_basic_config=False
+        )
+        got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
+        app._rollbar_initialized = True
 
 @app.route('/rollbar/test')
 def rollbar_test():

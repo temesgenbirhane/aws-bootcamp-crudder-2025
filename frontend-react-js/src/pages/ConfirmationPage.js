@@ -3,7 +3,8 @@ import React from "react";
 import { useParams } from 'react-router-dom';
 import { ReactComponent as Logo } from '../components/svg/logo.svg';
 
-import { resendSignUp, confirmSignUp } from 'aws-amplify/auth';
+import { resendSignUpCode, confirmSignUp } from 'aws-amplify/auth';
+
 
 export default function ConfirmationPage() {
   const [email, setEmail] = React.useState('');
@@ -16,7 +17,7 @@ export default function ConfirmationPage() {
   const resend_code = async () => {
     setErrors('');
     try {
-      await resendSignUp({ username: email });
+      await resendSignUpCode({ username: email });
       setCodeSent(true);
     } catch (err) {
       console.log(err);

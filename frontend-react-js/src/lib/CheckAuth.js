@@ -1,21 +1,23 @@
-import { Auth } from 'aws-amplify';
+import { getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+
 const checkAuth = async (setUser) => {
-  Auth.currentAuthenticatedUser({
-    // Optional, By default is false. 
-    // If set to true, this call will send a 
-    // request to Cognito to get the latest user data
-    bypassCache: false 
-  })
-  .then((user) => {
-    console.log('user',user);
-    return Auth.currentAuthenticatedUser()
-  }).then((cognito_user) => {
-      setUser({
-        display_name: cognito_user.attributes.name,
-        handle: cognito_user.attributes.preferred_username
-      })
-  })
-  .catch((err) => console.log(err));
+  try {
+    // getCurrentUser throws if not signed in
+    const user = await getCurrentUser();
+    console.log("user", user);
+
+    // fetchAuthSession gives access token + claims
+    const session = await fetchAuthSession();
+    const idToken = session.tokens?.idToken;
+
+    setUser({
+      display_name: idToken?.payload?.name,
+      handle: idToken?.payload?.preferred_username
+    });
+
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 export default checkAuth;

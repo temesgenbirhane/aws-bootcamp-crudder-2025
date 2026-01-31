@@ -1,8 +1,8 @@
 services:
-  backend-flask:
+  backend-flask:    # service name
     environment:
       # CONNECTION_URL: "${PROD_CONNECTION_URL}"
-      CONNECTION_URL: "postgresql://postgres:password@localhost:5432/cruddur"
+      CONNECTION_URL: "postgresql://postgres:password@db:5432/cruddur"
       FRONTEND_URL: "https://${CODESPACE_NAME}-3000.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
       BACKEND_URL: "https://${CODESPACE_NAME}-4567.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
       # OTEL_SERVICE_NAME: 'backend-flask'
@@ -17,7 +17,7 @@ services:
     ports:
       - "4567:4567"
 
-  frontend-react-js:
+  frontend-react-js:    # service name
     environment:
       REACT_APP_BACKEND_URL: "https://${CODESPACE_NAME}-4567.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
       REACT_APP_AWS_PROJECT_REGION: "${AWS_DEFAULT_REGION}"
@@ -30,7 +30,7 @@ services:
     # volumes: # chatgpt recommended to get rid of the volume so that  Docker installs node_modules inside the container
  
     #   - ./frontend-react-js:/frontend-react-js
-  dynamodb-local:
+  dynamodb-local:    # service name
     # https://stackoverflow.com/questions/67533058/persist-local-dynamodb-data-in-volumes-lack-permission-unable-to-open-databa
     # We needed to add user:root to get this working.
     user: root
@@ -42,7 +42,7 @@ services:
     volumes:
       - "./docker/dynamodb:/home/dynamodblocal/data"
     working_dir: /home/dynamodblocal
-  db:
+  db:      # service name
     image: postgres:16-alpine
     restart: always
     environment:
@@ -55,7 +55,7 @@ services:
 
 # the name flag is a hack to change the default prepend folder
 # name when outputting the image names
-networks: 
+networks:     # service name
   internal-network:
     driver: bridge
     name: cruddur
