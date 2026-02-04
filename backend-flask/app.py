@@ -125,6 +125,9 @@ def init_rollbar():
         )
         got_request_exception.connect(rollbar.contrib.flask.report_exception, app)
         app._rollbar_initialized = True
+@app.route('/api/health-check')
+def health_check():
+  return {'success': True}, 200
 
 @app.route('/rollbar/test')
 def rollbar_test():
