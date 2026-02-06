@@ -20,14 +20,10 @@ COPY . .
 
 # Set Enviroment Variables (Env Vars)
 # Inside Container and wil remain set when the container is running
-#  
+# ENV FLASK_DEBUG=1
 
 EXPOSE ${PORT}
 
 # CMD (Command)
 # python3 -m flask run --host=0.0.0.0 --port=4567
-<<<<<<< HEAD
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567", "--debug"]
-=======
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=4567", "--debug"]
->>>>>>> refs/remotes/origin/main
