@@ -1,0 +1,8 @@
+#! /usr/bin/bash
+
+# path is hardcoded
+
+docker build \
+-f "backend-flask/Dockerfile.prod" \
+-t backend-flask-prod \
+"backend-flask/."
