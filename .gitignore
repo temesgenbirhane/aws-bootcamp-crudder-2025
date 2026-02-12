@@ -2,3 +2,4 @@ dmeo
 .venv
 psycopg2-layer
 frontend-react-js/build/*
+*.env

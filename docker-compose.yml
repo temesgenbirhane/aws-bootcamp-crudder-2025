@@ -8,12 +8,12 @@ services:
       BACKEND_URL: "https://${CODESPACE_NAME}-4567.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
       # OTEL_SERVICE_NAME: 'backend-flask'
       # OTEL_EXPORTER_OTLP_ENDPOINT: "https://api.honeycomb.io"
-      # OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team=${HONEYCOMB_API_KEY}"
+      # OTEL_EXPORTER_OTLP_HEADERS: "x-honeycomb-team:${HONEYCOMB_API_KEY}"
       AWS_DEFAULT_REGION: "${AWS_DEFAULT_REGION}"
       AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID}"
       AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY}"
       AWS_COGNITO_USER_POOL_ID: "${AWS_COGNITO_USER_POOL_ID}"
-      AWS_COGNITO_USER_POOL_CLIENT_ID: "6bdss0f1867al22lee8jd3duku"   
+      AWS_COGNITO_USER_POOL_CLIENT_ID: "6bdss0f1867al22lee8jd3duku"
     build: ./backend-flask
     ports:
       - "4567:4567"
