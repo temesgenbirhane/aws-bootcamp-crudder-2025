@@ -5,7 +5,7 @@
   "features": {
     "ghcr.io/devcontainers/features/aws-cli:1": {},
     "ghcr.io/devcontainers/features/ruby:1": {},
-    "ghcr.io/devcontainers/features/powershell:1": {},
+    "ghcr.io/devcontainers/features/powershell:2": {},
     "ghcr.io/devcontainers/features/terraform:1": {},
     "ghcr.io/audacioustux/devcontainers/aws-sam-cli:1": {},
     "ghcr.io/devcontainers/features/docker-in-docker:2": {},
